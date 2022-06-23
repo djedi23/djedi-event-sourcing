@@ -1,0 +1,26 @@
+{
+  "application": {
+    "name": "event-sourcing",
+    "releasenumber": "RELEASENUMBER",
+    "gittag": "GITTAG",
+    "gitbranch": "GITBRANCH"
+  },
+  "log": {
+    "level": "silly",
+    "dir": "/var/log/event-sourcing",
+    "sentry": {
+      "disabled": true,
+      "dsn": ""
+    },
+    "logstash": {
+      "level": "info",
+      "disabled": true,
+      "host": "",
+      "auth": {
+        "username": "",
+        "password": ""
+      },
+      "ssl": true
+    }
+  }
+}

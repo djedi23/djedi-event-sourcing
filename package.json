@@ -1,0 +1,45 @@
+{
+  "name": "@djedi/event-sourcing",
+  "version": "0.1.10",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "license": "MIT",
+  "scripts": {
+    "prettier": "prettier --write ./**/*.ts ./**/**/*.ts  ./**/**/**/*.ts",
+    "prettierjson": "prettier --write --parser json  ./config/config.json",
+    "lint": "tslint --project .",
+    "start": "node build/index.js",
+    "test": "tsc && ava",
+    "prepare_": "yarn build && yarn api-extractor run --local",
+    "build": "tsc -d",
+    "dev": "yarn nodemon --ignore sessions/ build/index.js"
+  },
+  "devDependencies": {
+    "@djedi/configuration": "git+https://github.com/djedi23/djedi-configuration.git",
+    "@djedi/log": "git+https://github.com/djedi23/djedi-log.git#0.4.10",
+    "@manuth/tslint-presets": "^1.0.4",
+    "@microsoft/api-extractor": "^7.25.2",
+    "@types/lodash": "^4.14.149",
+    "@types/mongodb": "^3.3.11",
+    "ava": "^3.0.0-beta.1",
+    "lodash": "^4.17.15",
+    "mongodb": "^3.3.5",
+    "mongodb-memory-server": "^6.0.1",
+    "nodemon": "^2.0.1",
+    "prettier": "^1.19.1",
+    "tslint": "^5.20.1",
+    "typescript": "^3.9.2",
+    "typescript-tslint-plugin": "^0.5.5"
+  },
+  "dependencies": {
+    "sp2": "^1.5.1"
+  },
+  "peerDependencies": {
+    "@djedi/configuration": "git+https://github.com/djedi23/djedi-configuration.git",
+    "@djedi/log": "git+https://github.com/djedi23/djedi-log.git#0.4.10",
+    "@types/lodash": "^4.14.149",
+    "@types/mongodb": "^3.3.11",
+    "lodash": "^4.17.15",
+    "mongodb": "^3.3.5"
+  }
+}

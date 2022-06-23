@@ -1,0 +1,7 @@
+node_modules
+.npmrc
+yarn-error.log
+build
+*~
+/src/tsdoc-metadata.json
+/temp/
