@@ -11,10 +11,7 @@ export const mongo = async (connectionUrl?: string, options?: any): Promise<Db> 
   if (!db || connectionUrl) {
     const mongoUrl = connectionUrl || conf.get('mongodb:url') || 'mongodb://localhost';
     logger.debug(`Mongo url: ${mongoUrl}`);
-    const mongoclient = await MongoClient.connect(mongoUrl, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    const mongoclient = await MongoClient.connect(mongoUrl);
 
     if (options) options.client = mongoclient;
     const _db = mongoclient.db(conf.get('db:database') || 'test');

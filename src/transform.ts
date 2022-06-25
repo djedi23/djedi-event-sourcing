@@ -1,6 +1,6 @@
 import 'lodash';
-import { MatchKeysAndValues, UpdateQuery } from 'mongodb';
-import { StorableUpdateQuery } from './interfaces';
+import { MatchKeysAndValues, UpdateFilter } from 'mongodb';
+import { StorableUpdateFilter } from './interfaces';
 
 export const cleanKeys = <T>(query: MatchKeysAndValues<T>) => {
   const transformed: any = {};
@@ -11,8 +11,8 @@ export const cleanKeys = <T>(query: MatchKeysAndValues<T>) => {
   return transformed;
 };
 
-export const cleanUpdater = <T>(update: UpdateQuery<T>): StorableUpdateQuery<T> => {
-  const transformed: StorableUpdateQuery<T> = {};
+export const cleanUpdater = <T>(update: UpdateFilter<T>): StorableUpdateFilter<T> => {
+  const transformed: StorableUpdateFilter<T> = {};
   if (update.$addToSet) transformed._addToSet = cleanKeys(update.$addToSet);
   if (update.$set) transformed._set = cleanKeys(update.$set);
   if (update.$push) transformed._push = cleanKeys(update.$push);
@@ -28,8 +28,8 @@ export const restoreKeys = <T>(query: MatchKeysAndValues<T>) => {
   return transformed;
 };
 
-export const restoreUpdater = <T>(updater: StorableUpdateQuery<T>): UpdateQuery<T> => {
-  const restored: UpdateQuery<T> = {};
+export const restoreUpdater = <T>(updater: StorableUpdateFilter<T>): UpdateFilter<T> => {
+  const restored: UpdateFilter<T> = {};
   if (updater._set) restored['$set'] = restoreKeys(updater._set);
   if (updater._addToSet) restored['$addToSet'] = restoreKeys(updater._addToSet);
   if (updater._push) restored['$push'] = restoreKeys(updater._push);

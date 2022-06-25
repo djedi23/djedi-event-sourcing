@@ -1,11 +1,10 @@
 import { logger } from '@djedi/log';
 import test from 'ava';
+import { ObjectId } from 'mongodb';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { close, mongo } from './db';
 import { insertOne } from './index';
-import { Event } from './interfaces';
-
-type WithId<TSchema> = TSchema & { _id: any };
+import { Event, WithId } from './interfaces';
 
 test('insertOne', async t => {
   try {
@@ -18,14 +17,13 @@ test('insertOne', async t => {
     }
 
     const a = await insertOne<A>('co', { a: 'a' }, { connectionString });
-    t.deepEqual(a.result, { ok: 1, n: 1 });
-    t.deepEqual(a.ops, [{ a: 'a', _id: a.insertedId }]);
+    t.is(a.acknowledged, true);
 
     const data = await (await mongo(connectionString))
       .collection('co')
       .find()
       .toArray();
-    t.deepEqual(data, [{ a: 'a', _id: a.insertedId }]);
+    t.deepEqual(data, [{ a: 'a', _id: new ObjectId(a.insertedId) }]);
 
     const events = await (await mongo(connectionString))
       .collection<WithId<Event<A>>>('events')
@@ -46,6 +44,6 @@ test('insertOne', async t => {
     await close(connectionString);
     await mongod.stop();
   } catch (e) {
-    logger.error(`Error in insertOne: ${e.message}`, e);
+    logger.error(`Error in insertOne: ${(e as any).message}`, e);
   }
 });

@@ -1,18 +1,18 @@
 import conf from '@djedi/configuration';
 import { logger } from '@djedi/log';
-import { FilterQuery, UpdateOneOptions, UpdateQuery, UpdateWriteOpResult } from 'mongodb';
+import { Filter, InferIdType, UpdateFilter, UpdateOptions, UpdateResult } from 'mongodb';
 import { mongo } from './db';
-import { Event, Options } from './interfaces';
+import { Event, Options, WithId } from './interfaces';
 import { cleanUpdater } from './transform';
 
-const saveUpdateOneEvent = async <T extends { _id: unknown }>(
+const saveUpdateOneEvent = async <T>(
   collection: string,
-  filter: FilterQuery<T>,
-  update: UpdateQuery<T>,
-  options?: UpdateOneOptions,
+  filter: Filter<T>,
+  update: UpdateFilter<T>,
+  options?: UpdateOptions,
   option?: Options
 ) => {
-  const document: T | null = await (await mongo(option?.connectionString))
+  const document: WithId<T> | null = await (await mongo(option?.connectionString))
     .collection<T>(collection)
     .findOne(filter);
 
@@ -33,18 +33,18 @@ const saveUpdateOneEvent = async <T extends { _id: unknown }>(
 
 export const updateOne = async <T>(
   collection: string,
-  filter: FilterQuery<T>,
-  update: UpdateQuery<T>,
-  options?: UpdateOneOptions,
+  filter: Filter<T>,
+  update: UpdateFilter<T>,
+  options?: UpdateOptions,
   connectionOption?: Options
-): Promise<UpdateWriteOpResult> => {
+): Promise<UpdateResult> => {
   try {
     saveUpdateOneEvent(collection, filter, update, options, connectionOption);
     return (await mongo(connectionOption?.connectionString))
       .collection<T>(collection)
-      .updateOne(filter, update, options);
+      .updateOne(filter, update, options ?? {});
   } catch (error) {
-    logger.error(`Error in updateOne: ${error.message}`, error);
+    logger.error(`Error in updateOne: ${(error as any).message}`, error);
     throw error;
   }
 };

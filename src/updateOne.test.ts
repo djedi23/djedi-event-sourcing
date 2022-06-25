@@ -1,10 +1,9 @@
 import test from 'ava';
+import { ObjectId, WithId } from 'mongodb';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { close, mongo } from './db';
 import { insertOne, updateOne } from './index';
 import { Event } from './interfaces';
-
-type WithId<TSchema> = TSchema & { _id: any };
 
 test('updateOne $set 1', async t => {
   const mongod = new MongoMemoryServer();
@@ -16,8 +15,8 @@ test('updateOne $set 1', async t => {
 
   const a = await insertOne<A>('co', { a: 'a' }, { connectionString });
   const insertedId = a.insertedId;
-  t.deepEqual(a.result, { ok: 1, n: 1 });
-  t.deepEqual(a.ops, [{ a: 'a', _id: insertedId }]);
+  t.is(a.acknowledged, true);
+  //  t.deepEqual(a.ops, [{ a: 'a', _id: insertedId }]);
 
   const m = await updateOne<A>(
     'co',
@@ -27,13 +26,14 @@ test('updateOne $set 1', async t => {
     { connectionString }
   );
 
-  t.deepEqual(m.result, { n: 1, nModified: 1, ok: 1 });
+  t.is(m.acknowledged, true);
+  t.is(m.modifiedCount, 1);
 
   const data = await (await mongo(connectionString))
     .collection('co')
     .find()
     .toArray();
-  t.deepEqual(data, [{ a: 'b', _id: insertedId }]);
+  t.deepEqual(data, [{ a: 'b', _id: new ObjectId(insertedId) }]);
 
   const events = await (await mongo(connectionString))
     .collection<WithId<Event<A>>>('events')
@@ -101,7 +101,7 @@ test('updateOne $set 2', async t => {
       c: {
         a: [1, 2, 3],
       },
-      _id: insertedId,
+      _id: new ObjectId(insertedId),
     },
   ]);
 
@@ -176,8 +176,8 @@ test('updateOne $addToSet', async t => {
 
   const a = await insertOne<A>('co', { a: [] }, { connectionString });
   const insertedId = a.insertedId;
-  t.deepEqual(a.result, { ok: 1, n: 1 });
-  t.deepEqual(a.ops, [{ a: [], _id: insertedId }]);
+  t.is(a.acknowledged, true);
+  //  t.deepEqual(a.ops, [{ a: [], _id: insertedId }]);
 
   const m = await updateOne<A>(
     'co',
@@ -187,13 +187,14 @@ test('updateOne $addToSet', async t => {
     { connectionString }
   );
 
-  t.deepEqual(m.result, { n: 1, nModified: 1, ok: 1 });
+  t.is(m.acknowledged, true);
+  t.is(m.modifiedCount, 1);
 
   const data = await (await mongo(connectionString))
     .collection('co')
     .find()
     .toArray();
-  t.deepEqual(data, [{ a: ['b'], _id: insertedId }]);
+  t.deepEqual(data, [{ a: ['b'], _id: new ObjectId(insertedId) }]);
 
   const events = await (await mongo(connectionString))
     .collection<WithId<Event<A>>>('events')

@@ -1,10 +1,8 @@
 import conf from '@djedi/configuration';
 import { logger } from '@djedi/log';
-import { InsertOneWriteOpResult } from 'mongodb';
+import { InsertOneResult } from 'mongodb';
 import { mongo } from './db';
-import { Event, Options } from './interfaces';
-
-type WithId<TSchema> = TSchema & { _id: any };
+import { Event, Options, WithId } from './interfaces';
 
 /**
  */
@@ -12,7 +10,7 @@ export const insertOne = async <T>(
   collection: string,
   payload: T,
   option?: Options
-): Promise<InsertOneWriteOpResult<WithId<T>>> => {
+): Promise<InsertOneResult<WithId<T>>> => {
   try {
     const inserted = await (await mongo(option?.connectionString))
       .collection(collection)
@@ -30,7 +28,7 @@ export const insertOne = async <T>(
       .insertOne(evt);
     return inserted;
   } catch (error) {
-    logger.error(`Error in insertOne: ${error.message}`, error);
+    logger.error(`Error in insertOne: ${(error as any).message}`, error);
     throw error;
   }
 };

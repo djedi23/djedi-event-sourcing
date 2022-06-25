@@ -1,4 +1,4 @@
-import { update } from 'sp2';
+import { NonBreakingUpdateOperationOrSetOperand, update } from 'sp2';
 import { Event } from './interfaces';
 import { restoreUpdater } from './transform';
 
@@ -12,7 +12,10 @@ export const snapshot = <T extends object>(events: Array<Event<T>>): T => {
         break;
       }
       case 'updateOne': {
-        obj = update(obj, restoreUpdater(event.update)) as T;
+        obj = update(
+          obj,
+          restoreUpdater(event.update) as NonBreakingUpdateOperationOrSetOperand[]
+        ) as T;
         break;
       }
     }

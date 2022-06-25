@@ -1,4 +1,5 @@
 import test from 'ava';
+import { ObjectId } from 'mongodb';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { update as updateObj } from 'sp2';
 import { close, mongo } from './db';
@@ -34,8 +35,8 @@ test('snapshot === mongo data', async t => {
 
   const a = await insertOne<A>('co', { a: [] }, { connectionString });
   const insertedId = a.insertedId;
-  t.deepEqual(a.result, { ok: 1, n: 1 });
-  t.deepEqual(a.ops, [{ a: [], _id: insertedId }]);
+  t.is(a.acknowledged, true);
+  t.is(a.insertedId, insertedId);
 
   await updateOne<A>('co', { _id: insertedId }, { $set: { d: 'b' } }, {}, { connectionString });
   await updateOne<A>('co', { _id: insertedId }, { $set: { b: 'b' } }, {}, { connectionString });
@@ -73,7 +74,7 @@ test('snapshot === mongo data', async t => {
         a: [1, 2, 3, 'b'],
       },
       d: 'c',
-      _id: insertedId,
+      _id: new ObjectId(insertedId),
     },
   ]);
 

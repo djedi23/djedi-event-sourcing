@@ -1,4 +1,14 @@
-import { FilterQuery, MatchKeysAndValues, PushOperator, SetFields, UpdateOneOptions } from 'mongodb';
+import {
+  Filter,
+  MatchKeysAndValues,
+  ObjectId,
+  PushOperator,
+  SetFields,
+  UpdateOptions,
+} from 'mongodb';
+export { WithId } from 'mongodb';
+
+//type WithId<TSchema> = TSchema & { _id: string | ObjectId };
 
 /**
  */
@@ -24,9 +34,9 @@ export interface EventInsertOne<T> extends EventBase {
  */
 export interface EventUpdateOne<T> extends EventBase {
   type: 'updateOne';
-  filter: FilterQuery<T>;
-  update: StorableUpdateQuery<T>;
-  options?: UpdateOneOptions;
+  filter: Filter<T>;
+  update: StorableUpdateFilter<T>;
+  options?: UpdateOptions;
 }
 
 /**
@@ -37,7 +47,7 @@ export interface Options {
 
 /**
  */
-export interface StorableUpdateQuery<T> {
+export interface StorableUpdateFilter<T> {
   _set?: MatchKeysAndValues<T>;
   _push?: PushOperator<T>;
   _addToSet?: SetFields<T>;
